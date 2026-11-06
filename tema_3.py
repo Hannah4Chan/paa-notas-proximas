@@ -42,19 +42,29 @@ def notas_proximas_esperta(notas):
     return resultado, ordenacao + varredura
 
 
-def main():
+def main(argumentos=None):
+    import argparse
     import unittest
     import testes_tema_3
+    from experimentos_tema_3 import executar_experimentos
 
-    suite = unittest.defaultTestLoader.loadTestsFromModule(testes_tema_3)
+    parser = argparse.ArgumentParser(description='Experimentos de contagem do Tema 3')
+    parser.add_argument('--rapido', action='store_true',
+                        help='Execução parcial: n=100,200 e três amostras por tamanho')
+    parser.add_argument('--csv', help='Caminho alternativo para o CSV de saída')
+    opcoes = parser.parse_args(argumentos)
+    # A infraestrutura é testada pela suíte completa. Aqui rodam os oito testes
+    # de correção; incluir o teste de subprocesso causaria recursão do comando.
+    suite = unittest.defaultTestLoader.loadTestsFromTestCase(testes_tema_3.TestesTema3)
     if not unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful():
         raise SystemExit(1)
-    for notas in ([45, 70, 48, 90, 62], [10, 3, 11, 4], [9, 9, 2, 2]):
-        print(f"\nEntrada: {notas}")
-        print(f"Ingênua (resultado, diferenças): {notas_proximas_ingenua(notas)}")
-        print(f"Esperta (resultado, total): {notas_proximas_esperta(notas)}")
-        print("Esperta (resultado, ordenação, varredura):",
-              notas_proximas_esperta_detalhada(notas))
+    if opcoes.rapido:
+        from pathlib import Path
+        print('MODO RÁPIDO: resultados parciais, não substituem o experimento completo.')
+        executar_experimentos((100, 200), (), 3,
+                              opcoes.csv or Path(__file__).resolve().with_name('medicoes_rapidas.csv'))
+    else:
+        executar_experimentos(caminho=opcoes.csv)
 
 
 if __name__ == '__main__':

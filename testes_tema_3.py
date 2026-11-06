@@ -116,5 +116,113 @@ class TestesTema3(unittest.TestCase):
         self.verificar(aleatorio(1600, semente=2026))
 
 
+class TestesExperimentos(unittest.TestCase):
+    def test_extremos_mergesort(self):
+        from experimentos_tema_3 import melhor_caso, pior_caso, comparacoes_extremas
+        for n in range(7):
+            contagens = [mergesort(p)[1] for p in itertools.permutations(range(n))]
+            self.assertEqual(mergesort(melhor_caso(n))[1], min(contagens))
+            self.assertEqual(mergesort(pior_caso(n))[1], max(contagens))
+            self.assertEqual(sorted(pior_caso(n)), list(range(n)))
+        for n in (7, 9, 17, 100, 200, 400, 800, 1600):
+            self.assertEqual(mergesort(melhor_caso(n))[1], comparacoes_extremas(n)[0])
+            self.assertEqual(mergesort(pior_caso(n))[1], comparacoes_extremas(n)[1])
+            altura = (n - 1).bit_length()
+            self.assertEqual(comparacoes_extremas(n)[1], n * altura - 2**altura + 1)
+
+    def test_sementes_reproduziveis(self):
+        from experimentos_tema_3 import entrada_media, semente_media
+        sementes = [semente_media(100, r) for r in range(30)]
+        self.assertEqual(len(set(sementes)), 30)
+        entradas = [entrada_media(100, r) for r in range(30)]
+        self.assertEqual(len({tuple(v) for v in entradas}), 30)
+        self.assertEqual(entrada_media(100, 7), entrada_media(100, 7))
+        self.assertEqual(entrada_media(100, 7), aleatorio(100, 0, 100, sementes[7]))
+
+    def test_medicao_media_tabelas_csv(self):
+        import contextlib
+        import csv
+        import io
+        import tempfile
+        from pathlib import Path
+        from experimentos_tema_3 import executar_experimentos, entrada_media
+        saida = io.StringIO()
+        with tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parent) as pasta, contextlib.redirect_stdout(saida):
+            caminho = Path(pasta) / 'medicoes.csv'
+            from unittest.mock import patch
+            from trabalho_base import teste_do_dobro
+            with patch('experimentos_tema_3.teste_do_dobro', wraps=teste_do_dobro) as tabelas:
+                dados = executar_experimentos((4, 8), (16,), 3, caminho)
+            self.assertEqual(tabelas.call_count, 21)
+            for chamada in tabelas.call_args_list:
+                for n in chamada.kwargs['tamanhos']:
+                    valor_tabela = chamada.args[1](n)
+                    valor_csv = next(d['contagem'] for d in dados
+                                     if d['n'] == n and d['versao'] == chamada.kwargs['versao'])
+                    self.assertEqual(valor_tabela, valor_csv)
+            with caminho.open(encoding='utf-8', newline='') as f:
+                leitor = csv.DictReader(f)
+                self.assertEqual(leitor.fieldnames, ['versao', 'n', 'contagem'])
+                linhas = list(leitor)
+            self.assertEqual(len(linhas), len(dados))
+            self.assertEqual(len({(d['versao'], d['n']) for d in dados}), len(dados))
+            for linha, dado in zip(linhas, dados):
+                self.assertEqual(linha['versao'], dado['versao'])
+                self.assertEqual(int(linha['n']), dado['n'])
+                self.assertEqual(float(linha['contagem']), dado['contagem'])
+            for n in (4, 8, 16):
+                contagens = [notas_proximas_esperta_detalhada(entrada_media(n, r))
+                             for r in range(3)]
+                for fase, valores in (
+                    ('ordenacao', [c[1] for c in contagens]),
+                    ('varredura', [c[2] for c in contagens]),
+                    ('total', [c[1] + c[2] for c in contagens])):
+                    individuais = [d['contagem'] for d in dados
+                                    if d['n'] == n and d['versao'].startswith(
+                                        'esperta/medio/' + fase + '/rep=')]
+                    self.assertEqual(individuais, valores)
+                    media = next(d['contagem'] for d in dados
+                                 if d['n'] == n and d['versao'] ==
+                                 'esperta/medio/' + fase + '/media')
+                    self.assertEqual(media, sum(individuais) / 3)
+                for d in dados:
+                    if d['n'] == n and d['versao'].startswith('ingenua/'):
+                        self.assertNotEqual(n, 16)
+                        self.assertEqual(d['contagem'], n * (n - 1) // 2)
+            # A tabela da base apresenta a média com duas casas, sem mudar o CSV.
+            media4 = sum(c[1] for c in [notas_proximas_esperta_detalhada(
+                entrada_media(4, r)) for r in range(3)]) / 3
+            self.assertIn(f'{media4:.2f}', saida.getvalue())
+            self.assertIn('dobro', saida.getvalue())
+
+    def test_comando_principal_rapido(self):
+        import subprocess
+        import sys
+        import tempfile
+        from pathlib import Path
+        script = Path(__file__).resolve().with_name('tema_3.py')
+        with tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parent) as pasta:
+            processo = subprocess.run(
+                [sys.executable, '-X', 'utf8', str(script), '--rapido',
+                 '--csv', str(Path(pasta) / 'rapido.csv')],
+                cwd=pasta, capture_output=True, text=True, encoding='utf-8',
+                timeout=60)
+            self.assertEqual(processo.returncode, 0, processo.stderr)
+            self.assertIn('MODO RÁPIDO', processo.stdout)
+            self.assertIn('OK', processo.stderr)
+            self.assertTrue((Path(pasta) / 'rapido.csv').exists())
+        # O modo rápido usa o mesmo medidor; não deve substituir o CSV completo.
+
+    def test_interrompe_se_testes_falham(self):
+        from unittest.mock import patch
+        import tema_3
+        with patch('unittest.TextTestRunner.run') as executar:
+            executar.return_value.wasSuccessful.return_value = False
+            with patch('experimentos_tema_3.executar_experimentos') as medir:
+                with self.assertRaises(SystemExit):
+                    tema_3.main([])
+                medir.assert_not_called()
+
+
 if __name__ == '__main__':
     unittest.main()

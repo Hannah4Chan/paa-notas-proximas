@@ -3,6 +3,7 @@ __pycache__/
 .venv/
 venv/
 medicoes_exemplo.csv
+medicoes_rapidas.csv
 
 # Materiais do professor: manter localmente, sem publicação automática.
 /referencias/trabalho_base.pdf
