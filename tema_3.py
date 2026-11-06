@@ -42,6 +42,39 @@ def notas_proximas_esperta(notas):
     return resultado, ordenacao + varredura
 
 
+def demonstracao_interativa():
+    """Compara os algoritmos para notas digitadas, sem executar experimentos."""
+    print('DEMONSTRAÇÃO INTERATIVA: as duas notas mais próximas')
+    print('Digite inteiros separados por espaços ou vírgulas; sair para encerrar.')
+    print('Contagens: diferenças na ingênua; comparações + diferenças na esperta.')
+    while True:
+        try:
+            entrada = input('\nNotas: ').strip()
+        except (EOFError, KeyboardInterrupt):
+            print('\nDemonstração encerrada.')
+            return
+        if entrada.lower() == 'sair':
+            print('Demonstração encerrada.')
+            return
+        try:
+            notas = [int(valor) for valor in entrada.replace(',', ' ').split()]
+        except ValueError:
+            print('Entrada inválida: use apenas inteiros separados por espaços ou vírgulas.')
+            continue
+        if len(notas) < 2:
+            print('Informe pelo menos duas notas inteiras.')
+            continue
+        ingenua, diferencas = notas_proximas_ingenua(notas)
+        esperta, ordenacao, varredura = notas_proximas_esperta_detalhada(notas)
+        print(f'Notas informadas: {notas}')
+        print(f'Ingênua: par {ingenua[:2]}; diferença mínima = {ingenua[2]}; '
+              f'diferenças = {diferencas}')
+        print(f'Esperta: par {esperta[:2]}; diferença mínima = {esperta[2]}; '
+              f'ordenação = {ordenacao}; varredura = {varredura}; '
+              f'total = {ordenacao + varredura}')
+        print('Resultados coincidem: ' + ('sim' if ingenua == esperta else 'não'))
+
+
 def main(argumentos=None):
     import argparse
     import unittest
@@ -49,10 +82,18 @@ def main(argumentos=None):
     from experimentos_tema_3 import executar_experimentos
 
     parser = argparse.ArgumentParser(description='Experimentos de contagem do Tema 3')
-    parser.add_argument('--rapido', action='store_true',
+    modos = parser.add_mutually_exclusive_group()
+    modos.add_argument('--interativo', action='store_true',
+                       help='Digitar notas e comparar os algoritmos, sem gerar CSV')
+    modos.add_argument('--rapido', action='store_true',
                         help='Execução parcial: n=100,200 e três amostras por tamanho')
     parser.add_argument('--csv', help='Caminho alternativo para o CSV de saída')
     opcoes = parser.parse_args(argumentos)
+    if opcoes.interativo:
+        if opcoes.csv is not None:
+            parser.error('--csv não pode ser usado com --interativo')
+        demonstracao_interativa()
+        return
     # A infraestrutura é testada pela suíte completa. Aqui rodam os oito testes
     # de correção; incluir o teste de subprocesso causaria recursão do comando.
     suite = unittest.defaultTestLoader.loadTestsFromTestCase(testes_tema_3.TestesTema3)

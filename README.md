@@ -22,6 +22,41 @@ Depois de ordenar, basta comparar notas vizinhas: um valor intermediário não p
 
 É necessário Python 3, sem bibliotecas externas e sem conexão com a internet.
 
+Abra o PowerShell na pasta do projeto (ajuste o caminho se necessário):
+
+```powershell
+cd C:\projetos\paa-notas-proximas
+```
+
+### Demonstração interativa para apresentação
+
+```powershell
+python tema_3.py --interativo
+```
+
+Digite pelo menos duas notas inteiras, separadas por espaços ou vírgulas.
+Exemplo: `4 1 3 2`. São aceitos repetidos, negativos e inteiros fora de
+0 a 100, conforme o contrato dos algoritmos. Decimais não são aceitos;
+a vírgula separa notas, não casas decimais. Entradas inválidas podem ser
+corrigidas no próximo pedido. Digite `sair` para encerrar (ou use Ctrl+C).
+
+Para esse exemplo, a saída inclui:
+
+```text
+Ingênua: par (1, 2); diferença mínima = 1; diferenças = 6
+Esperta: par (1, 2); diferença mínima = 1; ordenação = 5; varredura = 3; total = 8
+Resultados coincidem: sim
+```
+
+Após cada comparação, você pode digitar outra lista. O total da esperta
+soma comparações da ordenação e diferenças da varredura; não mede tempo
+nem todas as instruções executadas. Em entradas pequenas, esse total pode
+ser maior que a contagem da ingênua. Os desempates seguem o contrato acima.
+O modo interativo não executa a suíte ou os experimentos e não grava CSV.
+Não pode ser combinado com `--rapido` ou `--csv`.
+
+### Experimentos, testes e ajuda
+
 ```powershell
 python tema_3.py
 python -m unittest testes_tema_3 -v
@@ -34,6 +69,31 @@ O segundo comando executa a suíte completa de 13 métodos, incluindo os testes 
 
 Projeto testado com Python 3.14.7 no Windows.
 
+Outros comandos disponíveis:
+
+```powershell
+# Experimento parcial, sem substituir medicoes.csv
+python tema_3.py --rapido
+# Escolher o destino dos resultados (completo ou rápido)
+python tema_3.py --csv medicoes_alternativas.csv
+python tema_3.py --rapido --csv demonstracao.csv
+# Todos os 16 testes: 13 originais e 3 do modo interativo
+python -m unittest testes_tema_3 testes_interativo -v
+# Apenas os 3 testes do modo interativo
+python -m unittest testes_interativo -v
+# Consultar as opções
+python tema_3.py --help
+# Chamar as funções misteriosas instrumentadas
+python -c "from misteriosas_criadas import misteriosa_a, misteriosa_b; print('A:', misteriosa_a(10)); print('B:', misteriosa_b(10))"
+# Chamar as versões para troca, que retornam somente o resultado
+python -c "from misteriosas_para_troca import misteriosa_a, misteriosa_b; print('A:', misteriosa_a(10)); print('B:', misteriosa_b(10))"
+```
+
+Os arquivos das funções misteriosas são módulos: executá-los diretamente
+não mostra resultados. As versões instrumentadas retornam `(resultado,
+contagem)`. Se o comando `python` não estiver disponível, use `py` no lugar
+de `python`, desde que o Python 3 esteja instalado.
+
 ## Estrutura atual
 
 ```text
@@ -44,6 +104,9 @@ trabalho_base.py
 tema_3.py
 experimentos_tema_3.py
 testes_tema_3.py
+testes_interativo.py
+misteriosas_criadas.py
+misteriosas_para_troca.py
 medicoes.csv
 README.md
 .gitignore
