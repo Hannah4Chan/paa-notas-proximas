@@ -121,7 +121,7 @@ As contagens podem ser reproduzidas com as sementes registradas. O tempo de exec
 
 ## Estado e próximas etapas
 
-Concluídos: repositório Git local, cópias dos PDFs, reconstrução e validação da base, algoritmos, contadores separados, testes e experimentos com tabelas e CSV. O código é mantido em um repositório Git local, sem remoto configurado ou publicação no GitHub.
+Concluídos: repositório Git local, cópias dos PDFs, reconstrução e validação da base, algoritmos, contadores separados, testes e experimentos com tabelas e CSV. O código está versionado no [GitHub](https://github.com/Hannah4Chan/paa-notas-proximas). O repositório permanece privado durante o desenvolvimento.
 
 Pendentes: confirmação do professor sobre o tema e a adaptação individual das funções misteriosas, análise formal de melhor e pior caso, funções misteriosas, relatório e slides.
 
