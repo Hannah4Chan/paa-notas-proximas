@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+medicoes_exemplo.csv
+
+# Materiais do professor: manter localmente, sem publicação automática.
+/referencias/trabalho_base.pdf
+/referencias/Trabalho_PAA_Contagem_Operacoes.pdf
