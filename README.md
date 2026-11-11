@@ -6,7 +6,7 @@ Trabalho da disciplina **Projeto e Análise de Algoritmos**, do curso de **Ciên
 **Professor:** Brendo.  
 **Tema 3:** As duas notas mais próximas.
 
-O objetivo é encontrar, em uma lista de notas inteiras, os dois valores com a menor diferença absoluta. Implementamos duas soluções em Python, contamos suas operações e comparamos os resultados teóricos com experimentos. O projeto também inclui testes automatizados, um modo interativo para demonstração e duas funções misteriosas preparadas para a atividade de troca entre grupos.
+O objetivo é encontrar, em uma lista de notas inteiras, os dois valores com a menor diferença absoluta. Implementamos duas soluções em Python, contamos suas operações e comparamos os resultados teóricos com experimentos. O projeto também inclui testes automatizados e um modo interativo para demonstração.
 
 ## Como executar
 
@@ -118,21 +118,6 @@ Para repetir a suíte:
 python -m unittest testes_tema_3 testes_interativo -v
 ```
 
-## Funções misteriosas
-
-Como parte da atividade proposta na disciplina, criamos duas funções para que outra equipe analise suas operações e estime a complexidade:
-
-- `misteriosas_para_troca.py`: versão destinada à troca, com a operação marcada por `# ←` e sem a contagem pronta.
-- `misteriosas_criadas.py`: versão instrumentada, usada para conferir os resultados e as contagens.
-
-Os arquivos são módulos Python. Executá-los diretamente não imprime resultados. Para testar a versão instrumentada:
-
-```powershell
-python -c "from misteriosas_criadas import misteriosa_a, misteriosa_b; print('A:', misteriosa_a(10)); print('B:', misteriosa_b(10))"
-```
-
-O gabarito não faz parte deste repositório. A dinâmica de troca e a análise das funções recebidas ainda dependem das orientações do professor.
-
 ## Arquivos principais
 
 ```text
@@ -141,8 +126,6 @@ tema_3.py                # Algoritmos e modo interativo
 experimentos_tema_3.py   # Geração das medições e tabelas
 testes_tema_3.py         # Testes dos algoritmos e experimentos
 testes_interativo.py     # Testes do modo interativo
-misteriosas_criadas.py   # Funções misteriosas instrumentadas
-misteriosas_para_troca.py # Versão destinada à troca
 medicoes.csv             # Resultados completos dos experimentos
 README.md
 ```
@@ -159,6 +142,6 @@ Mantivemos as funções e a lógica apresentadas no material, incluindo o `merge
 
 A implementação das duas soluções, o modo interativo, os testes, os experimentos e a análise matemática estão concluídos. O relatório acadêmico foi preparado com os resultados obtidos.
 
-A atividade de troca das funções misteriosas ainda aguarda a explicação do professor. A apresentação em slides também faz parte das próximas etapas.
+Conforme orientação posterior do professor, a Etapa 4 do enunciado (funções misteriosas) foi desconsiderada e não faz parte da entrega. A apresentação em slides é a próxima etapa.
 
 O repositório permanece **privado**, com acesso mediante convite. Foram utilizadas ferramentas de IA como apoio ao desenvolvimento, à revisão e à documentação; esse uso é informado no relatório acadêmico.
